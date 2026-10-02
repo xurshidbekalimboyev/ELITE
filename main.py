@@ -16,7 +16,7 @@ from aiogram.fsm.storage.memory import MemoryStorage
 logging.basicConfig(level=logging.INFO)
 
 # ==================== SOZLAMALAR ====================
-TOKEN = "8872397303:AAHYNf6_nPA7FXZi_RqKK3nLatcnRhDYbrM"  # BotFather'dan olingan token
+TOKEN = "8872397303:AAG0uvPxX3zjNifRhgj2qyvV6-xa_3do1PU"  # BotFather'dan olingan token
 ADMIN_ID = 8099893180          # O'zingizning TG ID'ingiz
 # ====================================================
 
