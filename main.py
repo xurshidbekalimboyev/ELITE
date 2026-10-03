@@ -6,10 +6,11 @@ import logging
 import time
 import hashlib
 import os
+import datetime
 import aiohttp
 from aiohttp import web
 from aiogram import Bot, Dispatcher, html, F
-from aiogram.types import Message, ReplyKeyboardMarkup, KeyboardButton
+from aiogram.types import Message, ReplyKeyboardMarkup, KeyboardButton, ChatPermissions
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
@@ -18,8 +19,8 @@ from aiogram.fsm.storage.memory import MemoryStorage
 logging.basicConfig(level=logging.INFO)
 
 # ==================== SOZLAMALAR ====================
-TOKEN = "8872397303:AAG0uvPxX3zjNifRhgj2qyvV6-xa_3do1PU"  # BotFather'dan olingan yangi token
-ADMIN_ID = 8099893180          # O'zingizning Telegram ID'ingiz
+TOKEN = "8872397303:AAG0uvPxX3zjNifRhgj2qyvV6-xa_3do1PU"  # BotFather'dan olingan tokeningiz
+ADMIN_ID = 8099893180          # Telegram ID'ingiz
 # ====================================================
 
 bot = Bot(token=TOKEN)
@@ -35,7 +36,7 @@ class OrderBot(StatesGroup):
 class AdminBroadcast(StatesGroup):
     waiting_for_message = State()
 
-# 🎛 E L I T E Cyber Keyboard v3.5
+# 🎛 E L I T E Cyber Keyboard v4.0
 elite_keyboard = ReplyKeyboardMarkup(
     keyboard=[
         [
@@ -68,10 +69,10 @@ async def cmd_start(message: Message):
     users_db.add(message.from_user.id)
     banner = (
         "<code>======================================\n"
-        "   [ E L I T E — SYSTEM INITIALIZED v3.5 ]\n"
+        "   [ E L I T E — SYSTEM INITIALIZED v4.0 ]\n"
         "======================================</code>\n"
         "<b>Status:</b> <code>ONLINE (OPERATIONAL)</code>\n"
-        "<b>Security Level:</b> <code>MAXIMUM</code>\n\n"
+        "<b>Security Level:</b> <code>MAXIMUM + ANTI-APK</code>\n\n"
         f"Xush kelibsiz, <b>{html.quote(message.from_user.full_name)}</b>!\n"
         "Kerakli cyber-funksiyani yoki xizmatni menyudan tanlang:"
     )
@@ -86,13 +87,13 @@ async def show_services(message: Message):
         "└ Business, Shop, Auto-posting, API integratsiya botlari.\n\n"
         "🌐 <b>2. Web & Backend Dasturlash:</b>\n"
         "└ Python (Aiogram, FastAPI, Django), Scriptlar va Parserlar.\n\n"
-        "🛡 <b>3. Kiber-Xavfsizlik Auditi:</b>\n"
-        "└ Kodlar va serverlarni zaiflikka tekshirish.\n\n"
+        "🛡 <b>3. Kiber-Xavfsizlik Auditi & Guruh Himoyasi:</b>\n"
+        "└ Kodlar, serverlarni tekshirish va guruhlarni Spam/APK viruslardan saqlash.\n\n"
         "<i>Buyurtma berish uchun <b>🚀 Botga Buyurtma Berish</b> tugmasini bosing!</i>"
     )
     await message.answer(services_text, parse_mode="HTML")
 
-# ⚡ HASH GENERATOR (Yangi Cyber Funksiya 1)
+# ⚡ HASH GENERATOR
 @dp.message(F.text == "⚡ Hash Generator")
 async def hash_guide(message: Message):
     await message.answer(
@@ -115,7 +116,7 @@ async def process_hash(message: Message):
     )
     await message.answer(res, parse_mode="HTML")
 
-# 🐍 PYTHON RUNNER (Yangi Dasturlash Funksiyasi 2)
+# 🐍 PYTHON RUNNER
 @dp.message(F.text == "🐍 Python Runner")
 async def py_guide(message: Message):
     await message.answer(
@@ -129,13 +130,12 @@ async def py_guide(message: Message):
 async def process_python(message: Message):
     code = message.text[4:].strip()
     try:
-        # Xavfsiz hisoblash va natija
         result = eval(code, {"__builtins__": None}, {})
         await message.answer(f"<b>[ PYTHON RESULT ]:</b>\n<code>{result}</code>", parse_mode="HTML")
     except Exception as e:
         await message.answer(f"<b>[ EXECUTION ERROR ]:</b>\n<code>{e}</code>", parse_mode="HTML")
 
-# 🌐 DOMAIN PING & WHOIS (Yangi Cyber Funksiya 3)
+# 🌐 DOMAIN PING & WHOIS
 @dp.message(F.text == "🌐 Domain Ping & WHOIS")
 async def domain_guide(message: Message):
     await message.answer(
@@ -242,10 +242,10 @@ async def get_tg_id(message: Message):
 @dp.message(F.text == "💻 System Status")
 async def system_status(message: Message):
     res = (
-        "<b>[ E L I T E — SYSTEM DIAGNOSTICS v3.5 ]</b>\n\n"
+        "<b>[ E L I T E — SYSTEM DIAGNOSTICS v4.0 ]</b>\n\n"
         "⚡ <b>Core Status:</b> <code>100% OPERATIONAL</code>\n"
         f"👥 <b>Foydalanuvchilar:</b> <code>{len(users_db)} ta</code>\n"
-        "🛡 <b>Firewall:</b> <code>ENABLED</code>"
+        "🛡 <b>Firewall & Anti-APK:</b> <code>ACTIVE</code>"
     )
     await message.answer(res, parse_mode="HTML")
 
@@ -276,7 +276,7 @@ async def process_order(message: Message, state: FSMContext):
     await bot.send_message(chat_id=ADMIN_ID, text=admin_notification, parse_mode="HTML")
     await state.clear()
 
-# 📢 ADMIN REKLAMA / E'LON YUBORISH (BROADCAST)
+# 📢 ADMIN REKLAMA / E'LON YUBORISH
 @dp.message(Command("elon"))
 @dp.message(Command("broadcast"))
 async def start_broadcast(message: Message, state: FSMContext):
@@ -318,12 +318,145 @@ async def reply_to_user(message: Message):
     except Exception:
         await message.answer("❌ Format: <code>/reply ID MATN</code>", parse_mode="HTML")
 
-# Render dummy server + Bot Startup
+# =========================================================
+# 👥 GURUH MODERATSIYASI & ANTI-LINK, ANTI-APK XIMOYA
+# =========================================================
+
+# 1. 🔇 /mute - Foydalanuvchini yozishdan cheklash
+@dp.message(Command("mute"))
+async def mute_user(message: Message):
+    if message.chat.type not in ["group", "supergroup"]:
+        return
+
+    member = await bot.get_chat_member(message.chat.id, message.from_user.id)
+    if member.status not in ["administrator", "creator"]:
+        return
+
+    if not message.reply_to_message:
+        await message.answer("⚠️ Reply qilib yozing!\nFormat: <code>/mute 10m</code>", parse_mode="HTML")
+        return
+
+    target_user = message.reply_to_message.from_user
+    args = message.text.split()
+    time_limit = 10
+    
+    if len(args) > 1:
+        time_str = args[1]
+        if time_str.endswith("m"):
+            time_limit = int(time_str[:-1])
+        elif time_str.endswith("h"):
+            time_limit = int(time_str[:-1]) * 60
+
+    until_date = datetime.datetime.now() + datetime.timedelta(minutes=time_limit)
+    await bot.restrict_chat_member(
+        chat_id=message.chat.id,
+        user_id=target_user.id,
+        permissions=ChatPermissions(can_send_messages=False),
+        until_date=until_date
+    )
+    await message.answer(f"🔇 <b>{target_user.full_name}</b> {time_limit} daqiqaga mute qilindi!", parse_mode="HTML")
+
+# 2. 🔊 /unmute - Muteniy olib tashlash
+@dp.message(Command("unmute"))
+async def unmute_user(message: Message):
+    if message.chat.type not in ["group", "supergroup"]:
+        return
+
+    member = await bot.get_chat_member(message.chat.id, message.from_user.id)
+    if member.status not in ["administrator", "creator"]:
+        return
+
+    if not message.reply_to_message:
+        return
+
+    target_user = message.reply_to_message.from_user
+    await bot.restrict_chat_member(
+        chat_id=message.chat.id,
+        user_id=target_user.id,
+        permissions=ChatPermissions(
+            can_send_messages=True,
+            can_send_media_messages=True,
+            can_send_other_messages=True
+        )
+    )
+    await message.answer(f"🔊 <b>{target_user.full_name}</b> uchun cheklov olib tashlandi!", parse_mode="HTML")
+
+# 3. 🚫 /ban - Guruhdan chiqarish
+@dp.message(Command("ban"))
+async def ban_user(message: Message):
+    if message.chat.type not in ["group", "supergroup"]:
+        return
+
+    member = await bot.get_chat_member(message.chat.id, message.from_user.id)
+    if member.status not in ["administrator", "creator"]:
+        return
+
+    if not message.reply_to_message:
+        return
+
+    target_user = message.reply_to_message.from_user
+    await bot.ban_chat_member(chat_id=message.chat.id, user_id=target_user.id)
+    await message.answer(f"🚫 <b>{target_user.full_name}</b> guruhdan ban qilindi!", parse_mode="HTML")
+
+# 4. 🧹 /clean - Xabarlarni to'plam o'chirish
+@dp.message(Command("clean"))
+async def clean_messages(message: Message):
+    if message.chat.type not in ["group", "supergroup"]:
+        return
+
+    member = await bot.get_chat_member(message.chat.id, message.from_user.id)
+    if member.status not in ["administrator", "creator"]:
+        return
+
+    args = message.text.split()
+    count = int(args[1]) if len(args) > 1 and args[1].isdigit() else 5
+    count = min(count, 100)
+    
+    current_id = message.message_id
+    for i in range(count + 1):
+        try:
+            await bot.delete_message(chat_id=message.chat.id, message_id=current_id - i)
+        except Exception:
+            pass
+
+# 🛡 5. ANTI-LINK VA ANTI-APK FILTR (Guruhlar uchun xavfsizlik)
+@dp.message(F.chat.type.in_(["group", "supergroup"]))
+async def group_security_filter(message: Message):
+    member = await bot.get_chat_member(message.chat.id, message.from_user.id)
+    if member.status in ["administrator", "creator"]:
+        return  # Adminlarga tegmaymiz
+
+    # 1-XIMOYA: .APK fayllar va virus dasturlarni o'chirish
+    if message.document and message.document.file_name:
+        if message.document.file_name.lower().endswith(".apk"):
+            try:
+                await message.delete()
+                await message.answer(
+                    f"⚠️ <b>{message.from_user.full_name}</b>, guruhga <b>.APK fayl</b> yuborish kiber-xavfsizlik sababli taqiqlangan!",
+                    parse_mode="HTML"
+                )
+                return
+            except Exception:
+                pass
+
+    # 2-XIMOYA: Reklama va havolalarni (Link) o'chirish
+    text = message.text or message.caption or ""
+    if "http://" in text or "https://" in text or "t.me/" in text or "@" in text:
+        try:
+            await message.delete()
+            await message.answer(
+                f"⚠️ <b>{message.from_user.full_name}</b>, guruhda havola (link) ulashish taqiqlangan!",
+                parse_mode="HTML"
+            )
+        except Exception:
+            pass
+
+# Render server + Bot Startup
 async def handle(request):
-    return web.Response(text="E L I T E Cyber Bot v3.5 is running!")
+    return web.Response(text="E L I T E Cyber Bot v4.0 is running!")
 
 async def main():
-    print(">>> E L I T E CYBER BOT v3.5 ISHGA TUSHDI <<<")
+    print(">>> E L I T E CYBER BOT v4.0 ISHGA TUSHDI <<<")
     app = web.Application()
     app.router.add_get("/", handle)
     runner = web.AppRunner(app)
