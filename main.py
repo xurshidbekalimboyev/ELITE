@@ -19,17 +19,15 @@ from aiogram.fsm.storage.memory import MemoryStorage
 logging.basicConfig(level=logging.INFO)
 
 # ==================== SOZLAMALAR ====================
-TOKEN = "8872397303:AAG0uvPxX3zjNifRhgj2qyvV6-xa_3do1PU"  # BotFather'dan olingan tokeningiz
+TOKEN = "8872397303:AAG0uvPxX3zjNifRhgj2qyvV6-xa_3do1PU"  # Tokeningizni kiriting
 ADMIN_ID = 8099893180          # Telegram ID'ingiz
 # ====================================================
 
 bot = Bot(token=TOKEN)
 dp = Dispatcher(storage=MemoryStorage())
 
-# Foydalanuvchilarni saqlash bazasi (Xotirada)
 users_db = set()
 
-# FSM Holatlari
 class OrderBot(StatesGroup):
     waiting_for_details = State()
 
@@ -64,7 +62,7 @@ elite_keyboard = ReplyKeyboardMarkup(
 )
 
 # 🟢 /start Buyrug'i
-@dp.message(Command("start"))
+@dp.message(Command("start"), F.chat.type == "private")
 async def cmd_start(message: Message):
     users_db.add(message.from_user.id)
     banner = (
@@ -72,14 +70,14 @@ async def cmd_start(message: Message):
         "   [ E L I T E — SYSTEM INITIALIZED v4.0 ]\n"
         "======================================</code>\n"
         "<b>Status:</b> <code>ONLINE (OPERATIONAL)</code>\n"
-        "<b>Security Level:</b> <code>MAXIMUM + ANTI-APK</code>\n\n"
+        "<b>Security Level:</b> <code>MAXIMUM</code>\n\n"
         f"Xush kelibsiz, <b>{html.quote(message.from_user.full_name)}</b>!\n"
         "Kerakli cyber-funksiyani yoki xizmatni menyudan tanlang:"
     )
     await message.answer(banner, parse_mode="HTML", reply_markup=elite_keyboard)
 
 # 💼 Servislar va Xizmatlar Menyusi
-@dp.message(F.text == "💼 Xizmatlar & Servislar")
+@dp.message(F.text == "💼 Xizmatlar & Servislar", F.chat.type == "private")
 async def show_services(message: Message):
     services_text = (
         "<b>[ E L I T E — PROFESSIONAL XIZMATLAR ]</b>\n\n"
@@ -94,7 +92,7 @@ async def show_services(message: Message):
     await message.answer(services_text, parse_mode="HTML")
 
 # ⚡ HASH GENERATOR
-@dp.message(F.text == "⚡ Hash Generator")
+@dp.message(F.text == "⚡ Hash Generator", F.chat.type == "private")
 async def hash_guide(message: Message):
     await message.answer(
         "<b>[ CYBER HASH GENERATOR ]</b>\n\n"
@@ -103,7 +101,7 @@ async def hash_guide(message: Message):
         parse_mode="HTML"
     )
 
-@dp.message(F.text.startswith("/hash "))
+@dp.message(F.text.startswith("/hash "), F.chat.type == "private")
 async def process_hash(message: Message):
     text = message.text[6:].strip()
     md5_h = hashlib.md5(text.encode()).hexdigest()
@@ -117,7 +115,7 @@ async def process_hash(message: Message):
     await message.answer(res, parse_mode="HTML")
 
 # 🐍 PYTHON RUNNER
-@dp.message(F.text == "🐍 Python Runner")
+@dp.message(F.text == "🐍 Python Runner", F.chat.type == "private")
 async def py_guide(message: Message):
     await message.answer(
         "<b>[ PYTHON CODE RUNNER ]</b>\n\n"
@@ -126,7 +124,7 @@ async def py_guide(message: Message):
         parse_mode="HTML"
     )
 
-@dp.message(F.text.startswith("/py "))
+@dp.message(F.text.startswith("/py "), F.chat.type == "private")
 async def process_python(message: Message):
     code = message.text[4:].strip()
     try:
@@ -136,7 +134,7 @@ async def process_python(message: Message):
         await message.answer(f"<b>[ EXECUTION ERROR ]:</b>\n<code>{e}</code>", parse_mode="HTML")
 
 # 🌐 DOMAIN PING & WHOIS
-@dp.message(F.text == "🌐 Domain Ping & WHOIS")
+@dp.message(F.text == "🌐 Domain Ping & WHOIS", F.chat.type == "private")
 async def domain_guide(message: Message):
     await message.answer(
         "<b>[ DOMAIN PINGER & WHOIS ]</b>\n\n"
@@ -147,7 +145,7 @@ async def domain_guide(message: Message):
         parse_mode="HTML"
     )
 
-@dp.message(F.text.startswith("/ping "))
+@dp.message(F.text.startswith("/ping "), F.chat.type == "private")
 async def process_ping(message: Message):
     domain = message.text[6:].strip().replace("https://", "").replace("http://", "")
     url = f"http://{domain}"
@@ -161,7 +159,7 @@ async def process_ping(message: Message):
     except Exception:
         await message.answer(f"🔴 <b>{domain}</b> tarmoqda topilmadi yoki oflayn!", parse_mode="HTML")
 
-@dp.message(F.text.startswith("/whois "))
+@dp.message(F.text.startswith("/whois "), F.chat.type == "private")
 async def process_whois(message: Message):
     domain = message.text[7:].strip().replace("https://", "").replace("http://", "")
     url = f"http://ip-api.com/json/{domain}"
@@ -183,11 +181,11 @@ async def process_whois(message: Message):
         await message.answer("❌ Ulanishda xatolik yuz berdi.")
 
 # 🔍 IP Scanner
-@dp.message(F.text == "🔍 IP Scanner")
+@dp.message(F.text == "🔍 IP Scanner", F.chat.type == "private")
 async def ip_scan_guide(message: Message):
     await message.answer("<b>[ IP SCANNER ]</b>\n\nIP manzil yuboring:\n<code>/ip 8.8.8.8</code>", parse_mode="HTML")
 
-@dp.message(F.text.startswith("/ip "))
+@dp.message(F.text.startswith("/ip "), F.chat.type == "private")
 async def process_ip_scan(message: Message):
     ip_address = message.text[4:].strip()
     url = f"http://ip-api.com/json/{ip_address}"
@@ -210,22 +208,22 @@ async def process_ip_scan(message: Message):
         await message.answer("<b>[ERROR]:</b> Server bilan bog'lanib bo'lmadi!")
 
 # 🛡 PassGen & Encrypt
-@dp.message(F.text == "🛡 Cyber PassGen")
+@dp.message(F.text == "🛡 Cyber PassGen", F.chat.type == "private")
 async def generate_password(message: Message):
     chars = string.ascii_letters + string.digits + "!@#$%^&*()_+"
     new_password = ''.join(random.choice(chars) for _ in range(16))
     await message.answer(f"<b>[ PASSGEN ]</b>\n\n<code>{new_password}</code>", parse_mode="HTML")
 
-@dp.message(F.text == "🔐 Encrypt / Decrypt")
+@dp.message(F.text == "🔐 Encrypt / Decrypt", F.chat.type == "private")
 async def encrypt_guide(message: Message):
     await message.answer("<b>[ ENCRYPTION ]</b>\n\nShifrlash: <code>/enc matn</code>\nOchish: <code>/dec shifr</code>", parse_mode="HTML")
 
-@dp.message(F.text.startswith("/enc "))
+@dp.message(F.text.startswith("/enc "), F.chat.type == "private")
 async def process_encrypt(message: Message):
     encoded = base64.b64encode(message.text[5:].strip().encode("utf-8")).decode("utf-8")
     await message.answer(f"<b>[ENCRYPTED]:</b>\n<code>{encoded}</code>", parse_mode="HTML")
 
-@dp.message(F.text.startswith("/dec "))
+@dp.message(F.text.startswith("/dec "), F.chat.type == "private")
 async def process_decrypt(message: Message):
     try:
         decoded = base64.b64decode(message.text[5:].strip().encode("utf-8")).decode("utf-8")
@@ -234,12 +232,12 @@ async def process_decrypt(message: Message):
         await message.answer("❌ Noto'g'ri shifr!", parse_mode="HTML")
 
 # 🆔 TG ID & System Status
-@dp.message(F.text == "🆔 Mening TG ID'm")
+@dp.message(F.text == "🆔 Mening TG ID'm", F.chat.type == "private")
 async def get_tg_id(message: Message):
     user = message.from_user
     await message.answer(f"👤 <b>Ism:</b> {html.quote(user.full_name)}\n🆔 <b>ID:</b> <code>{user.id}</code>", parse_mode="HTML")
 
-@dp.message(F.text == "💻 System Status")
+@dp.message(F.text == "💻 System Status", F.chat.type == "private")
 async def system_status(message: Message):
     res = (
         "<b>[ E L I T E — SYSTEM DIAGNOSTICS v4.0 ]</b>\n\n"
@@ -250,12 +248,12 @@ async def system_status(message: Message):
     await message.answer(res, parse_mode="HTML")
 
 # 🚀 Buyurtma berish
-@dp.message(F.text == "🚀 Botga Buyurtma Berish")
+@dp.message(F.text == "🚀 Botga Buyurtma Berish", F.chat.type == "private")
 async def start_order(message: Message, state: FSMContext):
     await state.set_state(OrderBot.waiting_for_details)
     await message.answer("<b>[ BUYURTMA ]</b>\n\nLoyiha haqida yozing (/cancel — bekor qilish):", parse_mode="HTML")
 
-@dp.message(OrderBot.waiting_for_details)
+@dp.message(OrderBot.waiting_for_details, F.chat.type == "private")
 async def process_order(message: Message, state: FSMContext):
     if message.text == "/cancel":
         await state.clear()
@@ -277,15 +275,15 @@ async def process_order(message: Message, state: FSMContext):
     await state.clear()
 
 # 📢 ADMIN REKLAMA / E'LON YUBORISH
-@dp.message(Command("elon"))
-@dp.message(Command("broadcast"))
+@dp.message(Command("elon"), F.chat.type == "private")
+@dp.message(Command("broadcast"), F.chat.type == "private")
 async def start_broadcast(message: Message, state: FSMContext):
     if message.from_user.id != ADMIN_ID:
         return
     await state.set_state(AdminBroadcast.waiting_for_message)
     await message.answer("📢 <b>Barcha foydalanuvchilarga yuboriladigan e'lon matnini kiriting:</b>\n\n<i>Bekor qilish: /cancel</i>", parse_mode="HTML")
 
-@dp.message(AdminBroadcast.waiting_for_message)
+@dp.message(AdminBroadcast.waiting_for_message, F.chat.type == "private")
 async def process_broadcast(message: Message, state: FSMContext):
     if message.text == "/cancel":
         await state.clear()
@@ -305,7 +303,7 @@ async def process_broadcast(message: Message, state: FSMContext):
     await state.clear()
 
 # 💬 ADMIN REPLY
-@dp.message(Command("reply"))
+@dp.message(Command("reply"), F.chat.type == "private")
 async def reply_to_user(message: Message):
     if message.from_user.id != ADMIN_ID:
         return
@@ -319,15 +317,12 @@ async def reply_to_user(message: Message):
         await message.answer("❌ Format: <code>/reply ID MATN</code>", parse_mode="HTML")
 
 # =========================================================
-# 👥 GURUH MODERATSIYASI & ANTI-LINK, ANTI-APK XIMOYA
+# 👥 GURUH MODERATSIYASI & ANTI-LINK, ANTI-APK XIMOYA (FAQAT GURUHLARDA)
 # =========================================================
 
-# 1. 🔇 /mute - Foydalanuvchini yozishdan cheklash
-@dp.message(Command("mute"))
+# 1. 🔇 /mute
+@dp.message(Command("mute"), F.chat.type.in_(["group", "supergroup"]))
 async def mute_user(message: Message):
-    if message.chat.type not in ["group", "supergroup"]:
-        return
-
     member = await bot.get_chat_member(message.chat.id, message.from_user.id)
     if member.status not in ["administrator", "creator"]:
         return
@@ -356,12 +351,9 @@ async def mute_user(message: Message):
     )
     await message.answer(f"🔇 <b>{target_user.full_name}</b> {time_limit} daqiqaga mute qilindi!", parse_mode="HTML")
 
-# 2. 🔊 /unmute - Muteniy olib tashlash
-@dp.message(Command("unmute"))
+# 2. 🔊 /unmute
+@dp.message(Command("unmute"), F.chat.type.in_(["group", "supergroup"]))
 async def unmute_user(message: Message):
-    if message.chat.type not in ["group", "supergroup"]:
-        return
-
     member = await bot.get_chat_member(message.chat.id, message.from_user.id)
     if member.status not in ["administrator", "creator"]:
         return
@@ -381,12 +373,9 @@ async def unmute_user(message: Message):
     )
     await message.answer(f"🔊 <b>{target_user.full_name}</b> uchun cheklov olib tashlandi!", parse_mode="HTML")
 
-# 3. 🚫 /ban - Guruhdan chiqarish
-@dp.message(Command("ban"))
+# 3. 🚫 /ban
+@dp.message(Command("ban"), F.chat.type.in_(["group", "supergroup"]))
 async def ban_user(message: Message):
-    if message.chat.type not in ["group", "supergroup"]:
-        return
-
     member = await bot.get_chat_member(message.chat.id, message.from_user.id)
     if member.status not in ["administrator", "creator"]:
         return
@@ -398,12 +387,9 @@ async def ban_user(message: Message):
     await bot.ban_chat_member(chat_id=message.chat.id, user_id=target_user.id)
     await message.answer(f"🚫 <b>{target_user.full_name}</b> guruhdan ban qilindi!", parse_mode="HTML")
 
-# 4. 🧹 /clean - Xabarlarni to'plam o'chirish
-@dp.message(Command("clean"))
+# 4. 🧹 /clean
+@dp.message(Command("clean"), F.chat.type.in_(["group", "supergroup"]))
 async def clean_messages(message: Message):
-    if message.chat.type not in ["group", "supergroup"]:
-        return
-
     member = await bot.get_chat_member(message.chat.id, message.from_user.id)
     if member.status not in ["administrator", "creator"]:
         return
@@ -419,29 +405,29 @@ async def clean_messages(message: Message):
         except Exception:
             pass
 
-# 🛡 5. ANTI-LINK VA ANTI-APK FILTR (Guruhlar uchun xavfsizlik)
+# 🛡 5. ANTI-LINK VA ANTI-APK FILTR (Faqat guruhlar uchun, shaxsiy chatga tegmaydi)
 @dp.message(F.chat.type.in_(["group", "supergroup"]))
 async def group_security_filter(message: Message):
     member = await bot.get_chat_member(message.chat.id, message.from_user.id)
     if member.status in ["administrator", "creator"]:
-        return  # Adminlarga tegmaymiz
+        return
 
-    # 1-XIMOYA: .APK fayllar va virus dasturlarni o'chirish
+    # 1. APK fayl bo'lsa o'chirish
     if message.document and message.document.file_name:
         if message.document.file_name.lower().endswith(".apk"):
             try:
                 await message.delete()
                 await message.answer(
-                    f"⚠️ <b>{message.from_user.full_name}</b>, guruhga <b>.APK fayl</b> yuborish kiber-xavfsizlik sababli taqiqlangan!",
+                    f"⚠️ <b>{message.from_user.full_name}</b>, guruhga <b>.APK fayl</b> yuborish taqiqlangan!",
                     parse_mode="HTML"
                 )
                 return
             except Exception:
                 pass
 
-    # 2-XIMOYA: Reklama va havolalarni (Link) o'chirish
+    # 2. Havola bo'lsa o'chirish
     text = message.text or message.caption or ""
-    if "http://" in text or "https://" in text or "t.me/" in text or "@" in text:
+    if "http://" in text or "https://" in text or "t.me/" in text:
         try:
             await message.delete()
             await message.answer(
